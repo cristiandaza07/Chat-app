@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Client, IStompSocket } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
@@ -17,10 +17,14 @@ export class ChatComponent implements OnInit {
   mensaje: Mensaje;
   mensajes: Mensaje[] = [];
 
+  usuariosConectados: number = 0;
   usuarioEscribiendo: String = '';
+  clientId: string;
 
-  constructor() {
+  constructor(private cdref: ChangeDetectorRef) {
     this.mensaje = new Mensaje();
+    //Generamos un id utilizando el milisegundo milisegundo actual y varias letras random para que sea poco probable que se repita con otro cliente
+    this.clientId = 'id-' + new Date().getTime() + '-' + Math.random().toString(36).substr(2);
   }
 
   ngOnInit(): void {
@@ -48,24 +52,57 @@ export class ChatComponent implements OnInit {
         this.mensajes.push(mensaje);
       });
 
-      this.client.subscribe('/chat/escribiendo', (event) => { 
+      this.client.subscribe('/chat/escribiendo', (event) => {
         this.usuarioEscribiendo = event.body + ' está escrbiendo...';
         setTimeout(() => {
           this.usuarioEscribiendo = '';
         }, 3000);
-      })
+      });
+
+      this.client.subscribe('/chat/usuariosConectados', (event) => {
+        console.log(JSON.parse(event.body));
+        this.usuariosConectados = JSON.parse(event.body) as number;
+      });
+
+
+      this.client.subscribe('/chat/historial/' + this.clientId, (event) => {
+        const historial = JSON.parse(event.body) as Mensaje[];
+        this.mensajes = historial
+          .map((m) => {
+            m.fecha = new Date(m.fecha);
+            return m;
+          })
+          .reverse();
+      });
+
+      this.client.publish({
+        destination: '/app/historial',
+        body: this.clientId,
+      });
 
       this.mensaje.tipo = 'NUEVO_USUARIO';
       this.client.publish({
         destination: '/app/mensaje',
         body: JSON.stringify(this.mensaje),
       });
+
+      this.client.publish({
+        destination: '/app/usuariosConectados',
+        body: JSON.stringify(this.clientId),
+      });
     };
 
     this.client.onDisconnect = (frame) => {
       console.log('Desconectados: ' + !this.client.connected + ' : ' + frame);
       this.conectado = false;
+      this.mensaje = new Mensaje();
+      this.mensajes = [];
     };
+  }
+
+  //Metodo para que la barra de scroll no de error cuando la altura del card-body cambie cuando se agrega un nuevo mensaje
+  ngAfterContentChecked() {
+    this.cdref.detectChanges();
   }
 
   conectar(): void {
@@ -73,7 +110,12 @@ export class ChatComponent implements OnInit {
   }
 
   desconectar(): void {
+    this.client.publish({
+      destination: '/app/usuariosConectados',
+      body: JSON.stringify(this.clientId),
+    });
     this.client.deactivate();
+    
   }
 
   enviarMensaje(): void {
