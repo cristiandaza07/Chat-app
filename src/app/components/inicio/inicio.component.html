@@ -1,0 +1,21 @@
+<div class="container">
+    <div class="info text-center">
+        <h3 class="fw-bold">CHAT GRUPAL</h3>
+        <p>Página para chatear grupalmente con otras personas. Con solo ingresar el nombre de usuario que deseas podrás hablar con otras personas</p>
+    </div>
+    <div class="card border border-2">
+        <div class="card-header text-center">
+            Ingresar al chat
+        </div>
+        <div class="card-body mx-2">
+            <div class="col">
+                <div class="row">
+                    <input class="form-control mt-1" type="text" [(ngModel)]="username" placeholder="Ingresa tu usuario..." name="username">
+                </div>
+                <div class="row">
+                    <button class="btn mt-2" type="button" [disabled]="!username" (click)="conectar()">Conectarse</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>    

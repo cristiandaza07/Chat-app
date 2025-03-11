@@ -1,68 +1,59 @@
-<div class="card">
-    <div class="card-header">
-        <ul class="nav nav-pills card-header-pills">
-            @if(conectado == false){
-                <li class="nav-item me-2">
-                    <input class="form-control" type="text" [(ngModel)]="mensaje.username" placeholder="Ingresa tu usuario..." name="username">
-                </li>
-                <li class="nav-item me-2">
-                    <button class="btn btn-success" type="button" [disabled]="!mensaje.username" (click)="conectar()">Conectar</button>
-                </li>
-            }@else {
-                <li class="nav-item">
-                    <button class="btn btn-warning" type="button" (click)="desconectar()">Desconectar</button>
-                </li>
-                <li class="nav-item ">
-                    <p class="fs-5 ms-2 px-2 py-1 bg-white border border-radius rounded-3"><i class="bi bi-person"></i> {{mensaje.username}}</p>
-                </li>
-        
-                <p class="text-end fs-5 ms-2 px-2 py-1 "><span class="text-success">● </span> {{usuariosConectados}} usuarios en linea</p>
-            }
-
-        </ul>
-    </div>
-
-    @if(conectado == true){
-        <div #scrollChat [scrollTop]="scrollChat.scrollHeight" class="card-body" style="overflow-y: scroll; height: 350px;">
-            @if (mensajes.length == 0) {
-                <div class="d-flex align-items-center justify-content-center h-100 ">
-
-                    <p class="fs-2 text-body-secondary">No hay mensajes</p> 
-                </div>
-               
-            }@else {
-                <ul class="list-group list-group-flush">
-                    @for (mensaje of mensajes; track $index) {
-                        <li class="list-group-item list-group-item-light"> 
-                            @if (mensaje.tipo == 'NUEVO_USUARIO') {
-                                <p><span class="text-success">● </span><span class="fw-semibold">{{mensaje.username}}</span> se ha conectado.</p>
-                            }@else if (mensaje.tipo == 'MENSAJE') {
-                                <p>{{mensaje.fecha | date:'shortTime'}}<span [ngStyle]="{'color': mensaje.color}" class="fw-semibold"> {{mensaje.username}}:</span> {{mensaje.texto}}</p>
-                            }
-                        </li>
-                    }
-                </ul>
-            }
-        </div>
-
-        <div class="card-footer">
-            <form class="form-inline">
-                <div class="row">
-                    <div class="col">
-                        <div class="form-group">
-                            <input type="text" class="form-control" placeholder="Escribe un mensaje..." name="texto" [(ngModel)]="mensaje.texto" (keyup)="escribiendoEvento()">
-                        </div>
-                    </div>
-                    <div class="col">
+@if (conectado == false) {
+    <inicio (usernameEventEmitter)="recibirUsername($event)" (conectadoEventEmitter)="conectar()"></inicio>
+}@else {
+    <div class="card">
+        <div class="card-header">
+            <ul class="nav">
+                    <li class="nav-item">
+                        <button class="btn btn-warning" type="button" (click)="desconectar()">Desconectarse</button>
+                    </li>
+                    <li class="nav-item ">
+                        <p class="fs-5 ms-2 px-2 py-1 bg-white border border-radius rounded-3"><i class="bi bi-person"></i> {{mensaje.username}}</p>
+                    </li>
+            
+                    <p class="text-white fs-5 ms-2 px-2 py-1 "><span class="text-success">● </span> {{usuariosConectados}} usuarios en linea</p>
+                
     
-                        <button class="btn btn-primary" type="submit" (click)="enviarMensaje()"><i class="bi bi-send"></i> Enviar</button>
-                    </div>
-                </div>
-            </form>
-            @if (usuarioEscribiendo != (mensaje.username + ' está escrbiendo...')) {
-                <div>{{usuarioEscribiendo}}</div>
-            }
+            </ul>
         </div>
-    }
+    
+        @if(conectado == true){
+            <div #scrollChat [scrollTop]="scrollChat.scrollHeight" class="card-body" style="overflow-y: scroll;">
+                @if (mensajes.length == 0) {
+                    <div class="d-flex align-items-center justify-content-center h-100 ">
+    
+                        <p class="fs-2 text-body-secondary">No hay mensajes</p> 
+                    </div>
+                   
+                }@else {
+                    <ul class="list-group">
+                        @for (mensaje of mensajes; track $index) {
+                            <li class="list-group-item mb-1 py-0"> 
+                                @if (mensaje.tipo == 'NUEVO_USUARIO') {
+                                    <p><span class="text-success my-0">● </span><span class="fw-semibold">{{mensaje.username}}</span> se ha conectado.</p>
+                                }@else if (mensaje.tipo == 'MENSAJE') {
+                                    <p class="my-1">{{mensaje.fecha | date:'shortTime'}}<span [ngStyle]="{'color': mensaje.color}" class="fw-semibold"> {{mensaje.username}}:</span> {{mensaje.texto}}</p>
+                                }
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+    
+            <div class="card-footer">
+                @if (usuarioEscribiendo != (mensaje.username + ' está escrbiendo...')) {
+                    <div class="text-white mb-1 fw-semibold">{{usuarioEscribiendo}}</div>
+                }
+                <form class="form-inline">
+                    <input type="text" class="form-control" placeholder="Escribe un mensaje..." name="texto" [(ngModel)]="mensaje.texto" (keyup)="escribiendoEvento()">
+        
+                    <button class="btn btn-primary" type="submit" style="width: 100px;" (click)="enviarMensaje()"><i class="bi bi-send"></i> Enviar</button>
+    
+                </form>
+                
+            </div>
+        }
+    
+    </div>
+}
 
-</div>

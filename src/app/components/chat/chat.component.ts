@@ -1,13 +1,14 @@
-import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Client, IStompSocket } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { Mensaje } from '../../models/Mensaje';
 import { CommonModule } from '@angular/common';
+import { InicioComponent } from "../inicio/inicio.component";
 
 @Component({
   selector: 'chat',
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, InicioComponent],
   templateUrl: './chat.component.html',
   styleUrl: './chat.component.css',
 })
@@ -133,4 +134,10 @@ export class ChatComponent implements OnInit {
       body: this.mensaje.username,
     });
   }
+
+  //Recibe el nombre de usuario ingresado en el componente 'inicio'
+  recibirUsername(username: string): void {
+    this.mensaje.username = username;
+  }
+
 }

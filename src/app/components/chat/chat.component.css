@@ -1,0 +1,49 @@
+.card {
+    border: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 60px 1fr 60px;
+    height: 100vh;
+    gap: 0px 0px;
+    grid-auto-flow: row;
+    grid-template-areas:
+        "card-header"
+        "card-body"
+        "card-footer";
+}
+
+.card-header {
+    background-color: #253237;
+    grid-area: card-header;
+}
+
+.card-body {
+    
+    grid-area: card-body;
+    background-color: #737373;
+}
+
+.card-footer {
+    background-color: #253237;
+    grid-area: card-footer;
+}
+
+.form-inline{
+    display: grid;
+    grid-template-columns: 1fr 100px;
+    grid-template-rows: 1fr;
+    gap: 0px 10px;
+    grid-auto-flow: row;
+    grid-template-areas:
+        "form-control btn";
+}
+
+.form-control{
+    grid-area: form-control;
+}
+
+.btn{
+    grid-area: btn;
+}

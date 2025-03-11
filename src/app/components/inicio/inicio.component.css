@@ -1,0 +1,38 @@
+
+
+.card-header, .btn{
+    background-color: #253237;
+    color: white;
+    font-weight: 500;
+}
+
+.container{
+    height: 100vh;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+}
+
+.card{
+    width: 20rem;
+    margin: 0 100px;
+}
+
+.info{
+    border-right: 2px solid #253237;
+    color: white;
+}
+
+ @media screen and (max-width: 768px){
+    .container{
+        flex-direction: column;
+        justify-content: space-evenly;
+        align-content: center;
+        flex-wrap: wrap;
+    }
+
+    .info {
+        border-right: none;
+    }
+} 
